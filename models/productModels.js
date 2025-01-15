@@ -5,6 +5,9 @@ const productModels=mongoose.Schema({
     size:{type:String,required:true},
     quantity:{type:String,required:true},
     rate:{type:String,required:true},
+    sqft:{type:String},
+    amount:{type:String},
+    total:{type:String}
 },
 {timestamps:true}
 );
