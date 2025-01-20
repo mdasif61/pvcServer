@@ -11,6 +11,7 @@ const folderModels = mongoose.Schema(
         children:[]
     }
     ],
+    work:[]
   },
   { timestamps: true }
 );

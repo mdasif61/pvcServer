@@ -17,7 +17,18 @@ const getFolder=async(req,res)=>{
     return res.status(201).json(allFolder)
 }
 
+const folderUpdate=async(req,res)=>{
+    const {id}=req.params;
+    const workItem=req.body;
+
+    const folder = await Folder.findById(id);
+    folder.work.push(workItem);
+    await folder.save();
+    res.status(201).json(folder)
+}
+
 module.exports={
     folderControll,
-    getFolder
+    getFolder,
+    folderUpdate
 }
