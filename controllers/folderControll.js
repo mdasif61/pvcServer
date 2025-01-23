@@ -22,6 +22,28 @@ const folderUpdate=async(req,res)=>{
     const workItem=req.body;
 
     const folder = await Folder.findById(id);
+    const modifiFolder = folder?.work.map(async(item) => {
+      const size = item.size;
+      if (size && size.includes("*" || "/" || "x" || "-")) {
+        const [width, height] = size.split("*" || "/" || "x" || "-").map(Number);
+        const Sft = width * height;
+
+        const quantiy = Number(item?.quantity);
+        const totalSft = Sft * quantiy;
+        // console.log(totalSft);
+
+        try {
+          const updateDoc =await Folder.findByIdAndUpdate(id, {
+            $set: {
+              sqft: totalSft,
+              amount:totalSft*Number(item?.rate)
+            },
+          });
+          console.log(updateDoc);
+        } catch (error) {} 
+      }
+    });
+
     folder.work.push(workItem);
     await folder.save();
     res.status(201).json(folder)

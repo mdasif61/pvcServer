@@ -5,11 +5,7 @@ const folderModels = mongoose.Schema(
     name: { type: String, required: true },
     type: { type: String, enum: ["folder", "file"], required: true },
     children: [
-      {
-        name:{type:String,required:true},
-        type:{type:String,required:true},
-        children:[]
-    }
+      
     ],
     work:[]
   },
