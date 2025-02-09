@@ -5,9 +5,22 @@ const folderModels = mongoose.Schema(
     name: { type: String, required: true },
     type: { type: String, enum: ["folder", "file"], required: true },
     children: [
-      
+
     ],
-    work:[]
+    work: [
+      {
+        _id: { type: mongoose.Schema.Types.ObjectId, default:()=>new mongoose.Types.ObjectId },
+        name: { type: String },
+        size: { type: String },
+        quantity: { type: String },
+        rate: { type: String },
+        sqft: { type: String },
+        amount: { type: String },
+        total: { type: String },
+        collectedTk: { type: String },
+        dues: { type: String }
+      }
+    ]
   },
   { timestamps: true }
 );

@@ -1,7 +1,7 @@
 const products = require("../models/productModels");
 
 const addProduct = async (req, res) => {
-  const { name, size, quantity, rate, sqft, amount, total } = req.body;
+  const { name, size, quantity, rate, sqft, amount, total, collectedTk, dues } = req.body;
 
   const productData = await products.create({
     name,
@@ -11,15 +11,20 @@ const addProduct = async (req, res) => {
     sqft,
     amount,
     total,
+    collectedTk,
+    dues
   });
 
   if (productData) {
     const allProduct = await products.find({});
-    const modifiProduct = allProduct.map(async(item) => {
+    const modifiProduct = allProduct.map(async (item) => {
       const size = item.size;
 
-      if (size && size.includes("*")) {
-        const [width, height] = size.split("*").map(Number);
+      if (size && size.includes("*") || size.includes("/") || size.includes("x") || size.includes("-")) {
+        const separator = size.includes("*")?"*":
+                          size.includes("/")?"/":
+                          size.includes("x")?"x":"-"
+        const [width, height] = size.split(separator).map(Number);
         const Sft = width * height;
 
         const quantiy = Number(item?.quantity);
@@ -27,14 +32,14 @@ const addProduct = async (req, res) => {
         // console.log(totalSft);
 
         try {
-          const updateDoc =await products.findByIdAndUpdate(item?.id, {
+          const updateDoc = await products.findByIdAndUpdate(item?.id, {
             $set: {
               sqft: totalSft,
-              amount:totalSft*Number(item?.rate)
+              amount: totalSft * Number(item?.rate)
             },
           });
-          console.log(updateDoc);
-        } catch (error) {}
+          // console.log(updateDoc);
+        } catch (error) { }
       }
     });
   }
@@ -71,6 +76,20 @@ const getProduct = async (req, res) => {
   return res.status(200).json(product);
 };
 
+const collectedTk = async (req, res) => {
+  const { id } = req.params;
+  const { collectedAndduesAmount } = req.body;
+  const [collectedTk, dues] = collectedAndduesAmount;
+
+  const updateTk = await products.findByIdAndUpdate(id, {
+    $set: {
+      collectedTk: Number(collectedTk.collectedTk),
+      dues:Number(dues.dues)
+    }
+  })
+  res.status(201).json(updateTk)
+}
+
 const getSizeAndQuantityCulc = async (req, res) => {
   // const product=await products.find({});
   const { id } = req.params;
@@ -81,4 +100,5 @@ module.exports = {
   addProduct,
   getProduct,
   getSizeAndQuantityCulc,
+  collectedTk
 };

@@ -7,7 +7,9 @@ const productModels=mongoose.Schema({
     rate:{type:String,required:true},
     sqft:{type:String},
     amount:{type:String},
-    total:{type:String}
+    total:{type:String},
+    collectedTk:{type:String},
+    dues:{type:String}
 },
 {timestamps:true}
 );
