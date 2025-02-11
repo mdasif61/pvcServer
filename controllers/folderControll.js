@@ -73,11 +73,22 @@ const folderCollectedTk = async (req, res) => {
   workItem.dues = Number(dues.dues);
   await singleFolder.save();
   res.status(201).json(singleFolder)
+};
+
+const folderRename = async (req, res) => {
+  const { id } = req.params;
+  const {foldername} = req.query;
+  const folder = await Folder.findById(id);
+  console.log(folder,foldername)
+  folder.name = foldername
+  await folder.save()
+  res.status(201).json(folder)
 }
 
 module.exports = {
   folderControll,
   getFolder,
   folderUpdate,
-  folderCollectedTk
+  folderCollectedTk,
+  folderRename
 }
