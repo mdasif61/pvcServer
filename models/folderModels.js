@@ -18,9 +18,10 @@ const folderModels = mongoose.Schema(
         amount: { type: String },
         total: { type: String },
         collectedTk: { type: String },
-        dues: { type: String }
-      }
-    ]
+        dues: { type: String },
+      },
+    ],
+    parent:{type:String}
   },
   { timestamps: true }
 );

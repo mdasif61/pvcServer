@@ -1,17 +1,61 @@
-const { Promise } = require("mongoose");
 const Folder = require("../models/folderModels");
 
 const folderControll = async (req, res) => {
-  const blankFolder = req.body
+  try {
+    const folders = req.body;
 
-  const folderData = await Folder.create(blankFolder);
-  if (folderData) {
-    res.status(201).json({ message: "folder created" })
+    if (!Array.isArray(folders) || folders.length === 0) {
+      return res.status(400).json({ message: "Invalid folder data" });
+    }
+
+    for (const folderData of folders) {
+      const { name, parent } = folderData;
+      if (!name) {
+        return res.status(400).json({ message: "Folder name is required" });
+      }
+
+      if (parent) {
+        const parentFolder = await Folder.findById(parent);
+        if (!parentFolder) {
+          return res.status(404).json({ message: "Parent folder not found" });
+        }
+
+        const subfolder = {
+          name,
+          type: "folder",
+          children: [],
+          work: [],
+        };
+
+        parentFolder.children.push(subfolder);
+        await parentFolder.save();
+
+        return res.status(201).json({ message: "Subfolder created", parent: parentFolder });
+      } else {
+        const newFolder = new Folder({
+          name,
+          type: "folder",
+          children: [],
+          work: [],
+          parent: null,
+        });
+
+        const savedFolder = await newFolder.save();
+        return res.status(201).json({ message: "Root folder created", folder: savedFolder });
+      }
+    }
+  } catch (error) {
+    console.error("Error creating folders:", error);
+    res.status(500).json({ message: "Error creating folders", error });
   }
 };
 
 const getFolder = async (req, res) => {
-  const allFolder = await Folder.find({});
+  const allFolder = await Folder.find({ parent: null })
+    .populate({
+      path: "children",
+      populate: { path: "children" }
+    });
   if (!allFolder) {
     return res.status(404).json({ message: "folder not found" })
   };
@@ -77,9 +121,9 @@ const folderCollectedTk = async (req, res) => {
 
 const folderRename = async (req, res) => {
   const { id } = req.params;
-  const {foldername} = req.query;
+  const { foldername } = req.query;
   const folder = await Folder.findById(id);
-  console.log(folder,foldername)
+  console.log(folder, foldername)
   folder.name = foldername
   await folder.save()
   res.status(201).json(folder)
