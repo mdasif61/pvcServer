@@ -1,52 +1,30 @@
 const Folder = require("../models/folderModels");
 
 const folderControll = async (req, res) => {
+  const { name, parentFolderId } = req.body;
+
   try {
-    const folders = req.body;
+    // Create the new folder
+    const folder = new Folder({
+      name,
+      type: "folder", // Default value
+      children: [], // Default value
+      work: [], // Default value
+      parent: parentFolderId || null, // Set parent if provided
+    });
 
-    if (!Array.isArray(folders) || folders.length === 0) {
-      return res.status(400).json({ message: "Invalid folder data" });
+    await folder.save();
+
+    // If parentFolderId is provided, add this folder to the parent's children array
+    if (parentFolderId) {
+      const parentFolder = await Folder.findById(parentFolderId);
+      parentFolder.children.push(folder._id);
+      await parentFolder.save();
     }
 
-    for (const folderData of folders) {
-      const { name, parent } = folderData;
-      if (!name) {
-        return res.status(400).json({ message: "Folder name is required" });
-      }
-
-      if (parent) {
-        const parentFolder = await Folder.findById(parent);
-        if (!parentFolder) {
-          return res.status(404).json({ message: "Parent folder not found" });
-        }
-
-        const subfolder = {
-          name,
-          type: "folder",
-          children: [],
-          work: [],
-        };
-
-        parentFolder.children.push(subfolder);
-        await parentFolder.save();
-
-        return res.status(201).json({ message: "Subfolder created", parent: parentFolder });
-      } else {
-        const newFolder = new Folder({
-          name,
-          type: "folder",
-          children: [],
-          work: [],
-          parent: null,
-        });
-
-        const savedFolder = await newFolder.save();
-        return res.status(201).json({ message: "Root folder created", folder: savedFolder });
-      }
-    }
+    res.status(201).json(folder);
   } catch (error) {
-    console.error("Error creating folders:", error);
-    res.status(500).json({ message: "Error creating folders", error });
+    res.status(500).json({ error: 'Failed to create folder' });
   }
 };
 
@@ -121,12 +99,13 @@ const folderCollectedTk = async (req, res) => {
 
 const folderRename = async (req, res) => {
   const { id } = req.params;
-  const { foldername } = req.query;
-  const folder = await Folder.findById(id);
-  console.log(folder, foldername)
-  folder.name = foldername
-  await folder.save()
-  res.status(201).json(folder)
+  const { name } = req.body;
+  console.log(id, name)
+  // const folder = await Folder.findById(id);
+  // console.log(folder, foldername)
+  // folder.name = foldername
+  // await folder.save()
+  // res.status(201).json(folder)
 }
 
 module.exports = {
