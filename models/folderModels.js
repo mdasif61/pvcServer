@@ -3,13 +3,16 @@ const mongoose = require("mongoose");
 const folderModels = mongoose.Schema(
   {
     name: { type: String, required: true },
-    type: { type: String, enum: ["folder", "file"], required: true },
+    type: { type: String, required: true },
     children: [
-
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Folder",
+      },
     ],
     work: [
       {
-        _id: { type: mongoose.Schema.Types.ObjectId, default:()=>new mongoose.Types.ObjectId },
+        _id: { type: mongoose.Schema.Types.ObjectId, default: () => new mongoose.Types.ObjectId },
         name: { type: String },
         size: { type: String },
         quantity: { type: String },
@@ -21,7 +24,7 @@ const folderModels = mongoose.Schema(
         dues: { type: String },
       },
     ],
-    parent:{type:String}
+    parent: { type: mongoose.Schema.Types.ObjectId, ref: "Folder" },
   },
   { timestamps: true }
 );
