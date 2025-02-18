@@ -1,5 +1,5 @@
 const express=require('express');
-const { addProduct, getProduct, getSizeAndQuantityCulc, collectedTk } = require('../controllers/productControll');
+const { addProduct, getProduct, getSizeAndQuantityCulc, collectedTk, calculateTotalCollectedTk } = require('../controllers/productControll');
 const { folderControll, getFolder, folderUpdate, folderCollectedTk, folderRename } = require('../controllers/folderControll');
 const { saveExpense, getAllExpense, getTotalExpenseAmount } = require('../controllers/expenseControll');
 const router=express.Router();
@@ -16,5 +16,6 @@ router.patch("/rename-folder/:id",folderRename)
 router.post("/expense/",saveExpense)
 router.get("/all-expense/",getAllExpense)
 router.get("/total-expense/",getTotalExpenseAmount)
+router.get("/total-collected/",calculateTotalCollectedTk)
 
 module.exports=router;

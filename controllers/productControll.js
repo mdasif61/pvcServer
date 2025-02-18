@@ -1,3 +1,4 @@
+const Folder = require("../models/folderModels");
 const products = require("../models/productModels");
 
 const addProduct = async (req, res) => {
@@ -82,9 +83,55 @@ const getSizeAndQuantityCulc = async (req, res) => {
   const singleId = id.split(",");
 };
 
+async function calculateCollectedTk(folderId) {
+  let totalCollectedTk = 0;
+
+  const folder = await Folder.findById(folderId).populate("children").populate("work");
+
+  if (!folder) {
+    throw new Error("Folder not found");
+  }
+
+  if (folder.work && folder.work.length > 0) {
+    for (const product of folder.work) {
+      if (product.collectedTk) {
+        totalCollectedTk += parseFloat(product.collectedTk) || 0;
+      }
+    }
+  }
+
+  if (folder.children && folder.children.length > 0) {
+    for (const childFolderId of folder.children) {
+      totalCollectedTk += await calculateCollectedTk(childFolderId);
+    }
+  }
+
+  return totalCollectedTk;
+}
+
+async function calculateTotalCollectedTk(req,res) {
+  let totalCollectedTk = 0;
+
+  const allProducts = await products.find({});
+  for (const product of allProducts) {
+    if (product.collectedTk) {
+      totalCollectedTk += parseFloat(product.collectedTk) || 0;
+    }
+  }
+
+  const rootFolders = await Folder.find({ parent: null });
+  for (const rootFolder of rootFolders) {
+    totalCollectedTk += await calculateCollectedTk(rootFolder._id);
+  }
+
+  res.status(201).json(totalCollectedTk);
+}
+
+
 module.exports = {
   addProduct,
   getProduct,
   getSizeAndQuantityCulc,
-  collectedTk
+  collectedTk,
+  calculateTotalCollectedTk
 };
