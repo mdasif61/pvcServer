@@ -27,25 +27,21 @@ const folderControll = async (req, res) => {
           parent: parentFolder._id,
         });
 
-        // Save the subfolder
         const savedSubfolder = await subfolder.save();
 
-        // Push the subfolder's _id into the parent's children array
         parentFolder.children.push(savedSubfolder._id);
         await parentFolder.save();
 
         return res.status(201).json({ message: "Subfolder created", parent: parentFolder });
       } else {
-        // Create a new root folder
         const newFolder = new Folder({
           name,
-          type: "folder", // Explicitly set type to "folder"
+          type: "folder",
           children: [],
           work: [],
-          parent: null, // No parent for root folders
+          parent: null,
         });
 
-        // Save the root folder
         const savedFolder = await newFolder.save();
         return res.status(201).json({ message: "Root folder created", folder: savedFolder });
       }
