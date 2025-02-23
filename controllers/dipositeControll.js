@@ -25,7 +25,7 @@ const addDiposite=async(req,res)=>{
 };
 
 const getDipositeData=async(req,res)=>{
-    const allDipositeData=await Diposite.find({});
+    const allDipositeData=await Diposite.find({}).sort({_id:-1});
     try {
         if(!allDipositeData){
             return res.status(404).json({message:"diposite data not found"})

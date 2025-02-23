@@ -61,7 +61,8 @@ const getFolder = async (req, res) => {
 
     const populateChildren = async (folder) => {
       if (folder.children && folder.children.length > 0) {
-        folder.children = await Folder.find({ _id: { $in: folder.children } }).populate('work');
+        folder.children = await Folder.find({ _id: { $in: folder.children } }).populate('work')
+        .sort({ createdAt: -1 });
         for (const child of folder.children) {
           await populateChildren(child);
         }

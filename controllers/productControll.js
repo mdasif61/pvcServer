@@ -56,7 +56,7 @@ const addProduct = async (req, res) => {
 };
 
 const getProduct = async (req, res) => {
-  const product = await products.find({});
+  const product = await products.find({}).sort({_id:-1});
   if (!product) {
     return res.status(404).json({ message: "product not found" });
   }
