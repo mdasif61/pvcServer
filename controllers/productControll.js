@@ -22,9 +22,9 @@ const addProduct = async (req, res) => {
       const size = item.size;
 
       if (size && size.includes("*") || size.includes("/") || size.includes("x") || size.includes("-")) {
-        const separator = size.includes("*")?"*":
-                          size.includes("/")?"/":
-                          size.includes("x")?"x":"-"
+        const separator = size.includes("*") ? "*" :
+          size.includes("/") ? "/" :
+            size.includes("x") ? "x" : "-"
         const [width, height] = size.split(separator).map(Number);
         const Sft = width * height;
 
@@ -56,7 +56,7 @@ const addProduct = async (req, res) => {
 };
 
 const getProduct = async (req, res) => {
-  const product = await products.find({}).sort({_id:-1});
+  const product = await products.find({}).sort({ _id: -1 });
   if (!product) {
     return res.status(404).json({ message: "product not found" });
   }
@@ -71,7 +71,7 @@ const collectedTk = async (req, res) => {
   const updateTk = await products.findByIdAndUpdate(id, {
     $set: {
       collectedTk: Number(collectedTk.collectedTk),
-      dues:Number(dues.dues)
+      dues: Number(dues.dues)
     }
   })
   res.status(201).json(updateTk)
@@ -109,7 +109,7 @@ async function calculateCollectedTk(folderId) {
   return totalCollectedTk;
 }
 
-async function calculateTotalCollectedTk(req,res) {
+async function calculateTotalCollectedTk(req, res) {
   let totalCollectedTk = 0;
 
   const allProducts = await products.find({});
@@ -125,6 +125,20 @@ async function calculateTotalCollectedTk(req,res) {
   }
 
   res.status(201).json(totalCollectedTk);
+};
+
+const getSearchData = async (req, res) => {
+  const query = req.query.query;
+  const allProduct = await products.find({})
+  if (!query) {
+    return res.status(404).json({ message: "search data not found" })
+  }
+  const result = allProduct.filter((product) => {
+    const nameMatch = product.name.toLowerCase().includes(query.toLowerCase());
+    const sizeMatch = product.size.toLowerCase().includes(query.toLowerCase());
+    return nameMatch || sizeMatch;
+  });
+  return res.status(201).json(result)
 }
 
 
@@ -133,5 +147,6 @@ module.exports = {
   getProduct,
   getSizeAndQuantityCulc,
   collectedTk,
-  calculateTotalCollectedTk
+  calculateTotalCollectedTk,
+  getSearchData
 };

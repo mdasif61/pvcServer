@@ -1,5 +1,5 @@
 const express=require('express');
-const { addProduct, getProduct, getSizeAndQuantityCulc, collectedTk, calculateTotalCollectedTk } = require('../controllers/productControll');
+const { addProduct, getProduct, getSizeAndQuantityCulc, collectedTk, calculateTotalCollectedTk, getSearchData } = require('../controllers/productControll');
 const { folderControll, getFolder, folderUpdate, folderCollectedTk, folderRename } = require('../controllers/folderControll');
 const { saveExpense, getAllExpense, getTotalExpenseAmount } = require('../controllers/expenseControll');
 const { addDiposite, getDipositeData } = require('../controllers/dipositeControll');
@@ -20,5 +20,6 @@ router.get("/total-expense/",getTotalExpenseAmount)
 router.get("/total-collected/",calculateTotalCollectedTk)
 router.post("/diposite-in-office/",addDiposite)
 router.get("/diposite-data/",getDipositeData)
+router.get("/search/",getSearchData)
 
 module.exports=router;
