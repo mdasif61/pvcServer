@@ -62,7 +62,7 @@ const getFolder = async (req, res) => {
     const populateChildren = async (folder) => {
       if (folder.children && folder.children.length > 0) {
         folder.children = await Folder.find({ _id: { $in: folder.children } }).populate('work')
-        .sort({ createdAt: -1 });
+          .sort({ createdAt: -1 });
         for (const child of folder.children) {
           await populateChildren(child);
         }
@@ -152,10 +152,57 @@ const folderRename = async (req, res) => {
   res.status(201).json(folder)
 }
 
+const getFolderWorkSearch = async (req, res) => {
+  const query = req.query.query;
+  const {id} = req.params; 
+  if (!query || query.trim() === "") {
+    return res.status(400).json({ message: "Search query is required" });
+  }
+
+  try {
+    let foldersToSearch;
+
+    if (id) {
+      const targetFolder = await Folder.findById(id);
+      if (!targetFolder) {
+        return res.status(404).json({ message: "Folder not found" });
+      }
+
+      foldersToSearch = [targetFolder];
+    } else {
+      foldersToSearch = await Folder.find({});
+    }
+
+    const matchingWorkItems = [];
+
+    foldersToSearch.forEach((folder) => {
+      const matchedWork = folder.work.filter((work) => {
+        const nameMatch = work.name.toLowerCase().includes(query.toLowerCase());
+        const sizeMatch = work.size.toLowerCase().includes(query.toLowerCase());
+        return nameMatch || sizeMatch;
+      });
+
+      if (matchedWork.length > 0) {
+        matchingWorkItems.push(...matchedWork);
+      }
+    });
+
+    if (matchingWorkItems.length === 0) {
+      return res.status(200).json({ message: "No matching work items found", data: [] });
+    }
+
+    return res.status(200).json(matchingWorkItems);
+  } catch (error) {
+    console.error("Error searching folders:", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+}
+
 module.exports = {
   folderControll,
   getFolder,
   folderUpdate,
   folderCollectedTk,
-  folderRename
+  folderRename,
+  getFolderWorkSearch
 }

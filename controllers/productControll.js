@@ -138,9 +138,13 @@ const getSearchData = async (req, res) => {
     const sizeMatch = product.size.toLowerCase().includes(query.toLowerCase());
     return nameMatch || sizeMatch;
   });
+
+  if (result.length === 0) {
+    return res.status(200).json({ message: "No matching products found", data: [] });
+  }
+
   return res.status(201).json(result)
 }
-
 
 module.exports = {
   addProduct,
