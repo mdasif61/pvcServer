@@ -198,11 +198,32 @@ const getFolderWorkSearch = async (req, res) => {
   }
 }
 
+const folderDeleteWork=async(req,res)=>{
+  const id=req.params.id;
+  console.log(id)
+  const { folderid } = req.query;
+  const singleFolder = await Folder.findById(folderid);
+  if (!singleFolder) {
+    return res.status(404).json({ message: "folder not found" })
+  }
+  const workItem = singleFolder.work.findIndex(item => item._id == id);
+  if (workItem===-1) {
+    return res.status(404).json({ message: "workitem not found" })
+  }
+
+  singleFolder.work.splice(workItem,1)
+
+  const updateFolder=await singleFolder.save();
+  res.status(201).json(updateFolder)
+
+}
+
 module.exports = {
   folderControll,
   getFolder,
   folderUpdate,
   folderCollectedTk,
   folderRename,
-  getFolderWorkSearch
+  getFolderWorkSearch,
+  folderDeleteWork
 }

@@ -1,6 +1,6 @@
 const express=require('express');
-const { addProduct, getProduct, getSizeAndQuantityCulc, collectedTk, calculateTotalCollectedTk, getSearchData } = require('../controllers/productControll');
-const { folderControll, getFolder, folderUpdate, folderCollectedTk, folderRename, getFolderWorkSearch } = require('../controllers/folderControll');
+const { addProduct, getProduct, getSizeAndQuantityCulc, collectedTk, calculateTotalCollectedTk, getSearchData, deleteWork } = require('../controllers/productControll');
+const { folderControll, getFolder, folderUpdate, folderCollectedTk, folderRename, getFolderWorkSearch, folderDeleteWork } = require('../controllers/folderControll');
 const { saveExpense, getAllExpense, getTotalExpenseAmount } = require('../controllers/expenseControll');
 const { addDiposite, getDipositeData } = require('../controllers/dipositeControll');
 const router=express.Router();
@@ -22,5 +22,7 @@ router.post("/diposite-in-office/",addDiposite)
 router.get("/diposite-data/",getDipositeData)
 router.get("/search/",getSearchData)
 router.get("/search-folder-work/:id",getFolderWorkSearch)
+router.delete("/delete-work/:id",deleteWork)
+router.delete("/folder-delete-work/:id",folderDeleteWork)
 
 module.exports=router;

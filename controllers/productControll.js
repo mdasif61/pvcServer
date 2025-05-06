@@ -144,6 +144,18 @@ const getSearchData = async (req, res) => {
   }
 
   return res.status(201).json(result)
+};
+
+const deleteWork=async(req,res)=>{
+  const id=req.params.id;
+  if(!id){
+    res.status(404).json({message:"id not found"})
+  }
+  const allProduct=await products.findByIdAndDelete(id);
+
+  if(allProduct){
+    res.status(202).json(allProduct)
+  }
 }
 
 module.exports = {
@@ -152,5 +164,6 @@ module.exports = {
   getSizeAndQuantityCulc,
   collectedTk,
   calculateTotalCollectedTk,
-  getSearchData
+  getSearchData,
+  deleteWork
 };
