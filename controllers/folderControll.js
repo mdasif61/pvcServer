@@ -146,7 +146,6 @@ const folderRename = async (req, res) => {
   const { id } = req.params;
   const { foldername } = req.query;
   const folder = await Folder.findById(id);
-  console.log(folder, foldername)
   folder.name = foldername
   await folder.save()
   res.status(201).json(folder)
@@ -200,7 +199,6 @@ const getFolderWorkSearch = async (req, res) => {
 
 const folderDeleteWork=async(req,res)=>{
   const id=req.params.id;
-  console.log(id)
   const { folderid } = req.query;
   const singleFolder = await Folder.findById(folderid);
   if (!singleFolder) {
@@ -216,6 +214,19 @@ const folderDeleteWork=async(req,res)=>{
   const updateFolder=await singleFolder.save();
   res.status(201).json(updateFolder)
 
+};
+
+const deleteFolder=async(req,res)=>{
+  const folderId=req.params.id;
+  if(!folderId){
+    return res.status(404).json({message:"folder not found"})
+  }
+  const findFolder=await Folder.findByIdAndDelete(folderId);
+
+  if(findFolder){
+    return res.status(201).json(findFolder)
+  }
+
 }
 
 module.exports = {
@@ -225,5 +236,6 @@ module.exports = {
   folderCollectedTk,
   folderRename,
   getFolderWorkSearch,
-  folderDeleteWork
+  folderDeleteWork,
+  deleteFolder
 }
