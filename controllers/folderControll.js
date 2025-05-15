@@ -236,7 +236,7 @@ const checkDuesOrCollected = async (req, res) => {
 
   if(query==="Dues"){
     const duesFilter=singleFolder.work.filter(item=>Number(item.dues)> 0)
-    console.log(duesFilter)
+    // console.log(duesFilter)
     return res.status(201).json(duesFilter)
   }else if(query==="Collected"){
     const collectedFilter=singleFolder.work.filter(item=>Number(item.collectedTk)>0)
