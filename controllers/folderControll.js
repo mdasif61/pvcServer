@@ -153,7 +153,7 @@ const folderRename = async (req, res) => {
 
 const getFolderWorkSearch = async (req, res) => {
   const query = req.query.query;
-  const {id} = req.params; 
+  const { id } = req.params;
   if (!query || query.trim() === "") {
     return res.status(400).json({ message: "Search query is required" });
   }
@@ -197,34 +197,51 @@ const getFolderWorkSearch = async (req, res) => {
   }
 }
 
-const folderDeleteWork=async(req,res)=>{
-  const id=req.params.id;
+const folderDeleteWork = async (req, res) => {
+  const id = req.params.id;
   const { folderid } = req.query;
   const singleFolder = await Folder.findById(folderid);
   if (!singleFolder) {
     return res.status(404).json({ message: "folder not found" })
   }
   const workItem = singleFolder.work.findIndex(item => item._id == id);
-  if (workItem===-1) {
+  if (workItem === -1) {
     return res.status(404).json({ message: "workitem not found" })
   }
 
-  singleFolder.work.splice(workItem,1)
+  singleFolder.work.splice(workItem, 1)
 
-  const updateFolder=await singleFolder.save();
+  const updateFolder = await singleFolder.save();
   res.status(201).json(updateFolder)
 
 };
 
-const deleteFolder=async(req,res)=>{
-  const folderId=req.params.id;
-  if(!folderId){
-    return res.status(404).json({message:"folder not found"})
+const deleteFolder = async (req, res) => {
+  const folderId = req.params.id;
+  if (!folderId) {
+    return res.status(404).json({ message: "folder not found" })
   }
-  const findFolder=await Folder.findByIdAndDelete(folderId);
+  const findFolder = await Folder.findByIdAndDelete(folderId);
 
-  if(findFolder){
+  if (findFolder) {
     return res.status(201).json(findFolder)
+  }
+
+}
+
+const checkDuesOrCollected = async (req, res) => {
+  const folderId = req.params.id;
+  const {query} = req.query;
+  const singleFolder = await Folder.findById(folderId);
+
+  if(query==="Dues"){
+    const duesFilter=singleFolder.work.filter(item=>Number(item.dues)> 0)
+    console.log(duesFilter)
+    return res.status(201).json(duesFilter)
+  }else if(query==="Collected"){
+    const collectedFilter=singleFolder.work.filter(item=>Number(item.collectedTk)>0)
+    console.log(collectedFilter)
+    return res.status(201).json(collectedFilter)
   }
 
 }
@@ -237,5 +254,6 @@ module.exports = {
   folderRename,
   getFolderWorkSearch,
   folderDeleteWork,
-  deleteFolder
+  deleteFolder,
+  checkDuesOrCollected
 }
