@@ -231,17 +231,25 @@ const deleteFolder = async (req, res) => {
 
 const checkDuesOrCollected = async (req, res) => {
   const folderId = req.params.id;
-  const {query} = req.query;
+  const { query } = req.query;
   const singleFolder = await Folder.findById(folderId);
 
-  if(query==="Dues"){
-    const duesFilter=singleFolder.work.filter(item=>Number(item.dues)> 0)
-    // console.log(duesFilter)
-    return res.status(201).json(duesFilter)
-  }else if(query==="Collected"){
-    const collectedFilter=singleFolder.work.filter(item=>Number(item.collectedTk)>0)
+  if (query === "Dues") {
+    const duesFilter = singleFolder.work.filter(item => Number(item.dues) > 0)
+
+    if (duesFilter.length) {
+      return res.status(201).json(duesFilter)
+    } else {
+      const blankDues = singleFolder.work.filter(item => Number(item.dues) == 0 || Number(item.dues) == "");
+      return res.status(201).json([])
+    }
+
+  } else if (query === "Collected") {
+    const collectedFilter = singleFolder.work.filter(item => Number(item.collectedTk) > 0)
     console.log(collectedFilter)
     return res.status(201).json(collectedFilter)
+  } else {
+    return res.status(201).json(singleFolder)
   }
 
 }
